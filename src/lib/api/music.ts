@@ -266,9 +266,15 @@ function normalizePlaylists(list: unknown): PlaylistSummary[] {
 
 /* -------------------------------- endpoints ------------------------------- */
 
+interface FetchOpts {
+  limit?: number | undefined;
+  page?: number | undefined;
+  signal?: AbortSignal | undefined;
+}
+
 export async function searchSongs(
   query: string,
-  { limit = 20, page = 0, signal }: { limit?: number; page?: number; signal?: AbortSignal } = {},
+  { limit = 20, page = 0, signal }: FetchOpts = {},
 ): Promise<Song[]> {
   if (!query.trim()) return [];
   const data = await request<RawAny>(
@@ -280,7 +286,7 @@ export async function searchSongs(
 
 export async function searchAlbums(
   query: string,
-  { limit = 20, page = 0, signal }: { limit?: number; page?: number; signal?: AbortSignal } = {},
+  { limit = 20, page = 0, signal }: FetchOpts = {},
 ): Promise<AlbumSummary[]> {
   if (!query.trim()) return [];
   const data = await request<RawAny>(
@@ -292,7 +298,7 @@ export async function searchAlbums(
 
 export async function searchArtists(
   query: string,
-  { limit = 20, page = 0, signal }: { limit?: number; page?: number; signal?: AbortSignal } = {},
+  { limit = 20, page = 0, signal }: FetchOpts = {},
 ): Promise<ArtistSummary[]> {
   if (!query.trim()) return [];
   const data = await request<RawAny>(
@@ -304,7 +310,7 @@ export async function searchArtists(
 
 export async function searchPlaylists(
   query: string,
-  { limit = 20, page = 0, signal }: { limit?: number; page?: number; signal?: AbortSignal } = {},
+  { limit = 20, page = 0, signal }: FetchOpts = {},
 ): Promise<PlaylistSummary[]> {
   if (!query.trim()) return [];
   const data = await request<RawAny>(
@@ -364,7 +370,7 @@ export async function getSongSuggestions(
 export async function getSongLyrics(
   id: string,
   signal?: AbortSignal,
-): Promise<{ lyrics: string; copyright?: string } | null> {
+): Promise<{ lyrics: string; copyright?: string | undefined } | null> {
   try {
     const data = await request<RawAny>(
       `/songs/${encodeURIComponent(id)}/lyrics`,
