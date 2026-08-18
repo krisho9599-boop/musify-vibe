@@ -11,7 +11,7 @@ export const API_URL: string =
   "https://saavn-api-eight.vercel.app/api";
 
 export class ApiError extends Error {
-  status?: number;
+  status?: number | undefined;
   constructor(message: string, status?: number) {
     super(message);
     this.name = "ApiError";
@@ -25,16 +25,16 @@ export interface Song {
   id: string;
   title: string;
   artist: string;
-  artistId?: string;
-  album?: string;
-  albumId?: string;
+  artistId?: string | undefined;
+  album?: string | undefined;
+  albumId?: string | undefined;
   artwork: string;
   audioUrl: string | null;
   duration: number;
-  year?: string;
-  language?: string;
-  hasLyrics?: boolean;
-  playCount?: number;
+  year?: string | undefined;
+  language?: string | undefined;
+  hasLyrics?: boolean | undefined;
+  playCount?: number | undefined;
 }
 
 export interface AlbumSummary {
@@ -42,13 +42,13 @@ export interface AlbumSummary {
   title: string;
   artist: string;
   artwork: string;
-  year?: string;
-  songCount?: number;
-  language?: string;
+  year?: string | undefined;
+  songCount?: number | undefined;
+  language?: string | undefined;
 }
 
 export interface Album extends AlbumSummary {
-  description?: string;
+  description?: string | undefined;
   songs: Song[];
 }
 
@@ -56,14 +56,14 @@ export interface ArtistSummary {
   id: string;
   name: string;
   image: string;
-  role?: string;
+  role?: string | undefined;
 }
 
 export interface Artist extends ArtistSummary {
-  bio?: string;
-  followerCount?: number;
-  isVerified?: boolean;
-  dominantLanguage?: string;
+  bio?: string | undefined;
+  followerCount?: number | undefined;
+  isVerified?: boolean | undefined;
+  dominantLanguage?: string | undefined;
   topSongs: Song[];
   topAlbums: AlbumSummary[];
   singles: AlbumSummary[];
@@ -74,9 +74,9 @@ export interface PlaylistSummary {
   id: string;
   title: string;
   artwork: string;
-  songCount?: number;
-  description?: string;
-  language?: string;
+  songCount?: number | undefined;
+  description?: string | undefined;
+  language?: string | undefined;
 }
 
 export interface Playlist extends PlaylistSummary {
@@ -144,8 +144,9 @@ function pickAudio(downloadUrl: unknown): string | null {
 
 async function request<T>(path: string, signal?: AbortSignal): Promise<T> {
   let res: Response;
+  const init: RequestInit = signal ? { signal } : {};
   try {
-    res = await fetch(`${API_URL}${path}`, { signal });
+    res = await fetch(`${API_URL}${path}`, init);
   } catch (err) {
     if ((err as Error).name === "AbortError") throw err;
     throw new ApiError("Network error — check your connection and try again.");
@@ -168,7 +169,8 @@ async function request<T>(path: string, signal?: AbortSignal): Promise<T> {
 
 /* ------------------------------- normalizers ------------------------------ */
 
-type RawAny = Record<string, any>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type RawAny = any;
 
 export function normalizeSong(raw: RawAny | null | undefined): Song | null {
   if (!raw?.id) return null;
