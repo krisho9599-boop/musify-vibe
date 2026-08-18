@@ -118,7 +118,7 @@ function PlaylistsPage() {
               ) : (
                 <SongList
                   songs={active.songs}
-                  onRemove={(songId) => removeFromPlaylist(active.id, songId)}
+                  onRemove={(song) => removeFromPlaylist(active.id, song.id)}
                 />
               )}
             </div>
